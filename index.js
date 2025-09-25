@@ -5,8 +5,8 @@ const fetch = require('node-fetch');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🔐 New hardcoded API key
-const OPENROUTER_API_KEY = "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";
+// ✅ Use the active key
+const OPENROUTER_API_KEY = "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";
 
 app.use(cors());
 app.use(express.json());
