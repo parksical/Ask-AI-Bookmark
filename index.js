@@ -16,6 +16,7 @@ app.get('/', (req, res) => {
 app.post('/ask', async (req, res) => {
   const question = req.body.question;
   console.log("Received question:", question);
+  console.log("Using API key:", OPENROUTER_API_KEY?.slice(0, 10) + "...");
 
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -31,8 +32,14 @@ app.post('/ask', async (req, res) => {
     });
 
     const data = await response.json();
-    const answer = data.choices?.[0]?.message?.content || "No response";
-    res.json({ answer });
+    console.log("OpenRouter response:", JSON.stringify(data, null, 2));
+
+    const answer = data.choices?.[0]?.message?.content;
+    if (answer) {
+      res.json({ answer });
+    } else {
+      res.json({ answer: "OpenRouter gave no answer." });
+    }
   } catch (error) {
     console.error("Error talking to OpenRouter:", error);
     res.json({ answer: "Error reaching OpenRouter." });
