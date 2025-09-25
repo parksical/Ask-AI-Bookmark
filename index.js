@@ -4,7 +4,9 @@ const fetch = require('node-fetch');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+
+// 🔐 Hardcoded API key for testing (replace with env var later)
+const OPENROUTER_API_KEY = "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";
 
 app.use(cors());
 app.use(express.json());
@@ -15,8 +17,8 @@ app.get('/', (req, res) => {
 
 app.post('/ask', async (req, res) => {
   const question = req.body.question;
-  console.log("Received question:", question);
-  console.log("Using API key:", OPENROUTER_API_KEY?.slice(0, 10) + "...");
+  console.log("📩 Received question:", question);
+  console.log("🔑 Using API key:", OPENROUTER_API_KEY?.slice(0, 10) + "...");
 
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -26,26 +28,26 @@ app.post('/ask', async (req, res) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "mistral/mistral-7b-instruct",
+        model: "openai/gpt-3.5-turbo",
         messages: [{ role: "user", content: question }]
       })
     });
 
     const data = await response.json();
-    console.log("OpenRouter response:", JSON.stringify(data, null, 2));
+    console.log("📦 OpenRouter response:", JSON.stringify(data, null, 2));
 
     const answer = data.choices?.[0]?.message?.content;
     if (answer) {
       res.json({ answer });
     } else {
-      res.json({ answer: "OpenRouter gave no answer." });
+      res.json({ answer: "⚠️ OpenRouter gave no answer." });
     }
   } catch (error) {
-    console.error("Error talking to OpenRouter:", error);
-    res.json({ answer: "Error reaching OpenRouter." });
+    console.error("❌ Error talking to OpenRouter:", error);
+    res.json({ answer: "🚨 Error reaching OpenRouter." });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
