@@ -1,47 +1,44 @@
 const express = require('express');
-const fetch = require('node-fetch');
 const cors = require('cors');
+const fetch = require('node-fetch');
+
 const app = express();
+const PORT = process.env.PORT || 3000;
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
 app.use(cors());
 app.use(express.json());
 
-// ✅ Hardcoded OpenRouter API key
-const OPENROUTER_API_KEY = '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';
-const MODEL = 'mistralai/mistral-7b-instruct';
-
-// 🧪 Debug log to confirm key is loading
-console.log('Using API key:', OPENROUTER_API_KEY);
-
 app.get('/', (req, res) => {
-  res.send('Your AI proxy server is running!');
+  res.send('Ask Parker is alive and ready!');
 });
 
 app.post('/ask', async (req, res) => {
   const question = req.body.question;
+  console.log("Received question:", question);
+
   try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json'
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: 'user', content: question }]
+        model: "mistral/mistral-7b-instruct",
+        messages: [{ role: "user", content: question }]
       })
     });
 
     const data = await response.json();
-    console.log('OpenRouter response:', data);
-
-    const answer = data.choices?.[0]?.message?.content || 'No response';
-    console.log('Final answer:', answer);
+    const answer = data.choices?.[0]?.message?.content || "No response";
     res.json({ answer });
-  } catch (err) {
-    console.error('Error:', err);
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    console.error("Error talking to OpenRouter:", error);
+    res.json({ answer: "Error reaching OpenRouter." });
   }
 });
 
-app.listen(3000, () => console.log('Proxy server running on port 3000'));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
