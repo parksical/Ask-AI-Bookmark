@@ -5,8 +5,8 @@ const fetch = require('node-fetch');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🔐 Hardcoded API key for testing (replace with env var later)
-const OPENROUTER_API_KEY = "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";
+// 🔐 New hardcoded API key
+const OPENROUTER_API_KEY = "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";
 
 app.use(cors());
 app.use(express.json());
@@ -36,14 +36,15 @@ app.post('/ask', async (req, res) => {
     const data = await response.json();
     console.log("📦 OpenRouter response:", JSON.stringify(data, null, 2));
 
-    const answer = data.choices?.[0]?.message?.content;
-    if (answer) {
-      res.json({ answer });
-    } else {
-      res.json({ answer: "⚠️ OpenRouter gave no answer." });
+    if (data.error) {
+      console.error("❌ OpenRouter error:", data.error);
+      return res.json({ answer: "⚠️ OpenRouter error: " + data.error.message });
     }
+
+    const answer = data.choices?.[0]?.message?.content;
+    res.json({ answer: answer || "⚠️ OpenRouter gave no answer." });
   } catch (error) {
-    console.error("❌ Error talking to OpenRouter:", error);
+    console.error("🚨 Error talking to OpenRouter:", error);
     res.json({ answer: "🚨 Error reaching OpenRouter." });
   }
 });
