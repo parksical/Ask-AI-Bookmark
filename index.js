@@ -5,7 +5,7 @@ const fetch = require('node-fetch');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ✅ New OpenRouter API key: skid
+// ✅ OpenRouter API key: skid
 const OPENROUTER_API_KEY = "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";
 
 app.use(cors({ origin: '*' }));
@@ -28,7 +28,7 @@ app.post('/ask', async (req, res) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "mistral/mistral-7b-instruct", // ✅ Use a model that's widely available
+        model: "openai/gpt-3.5-turbo-instruct", // ✅ Updated model
         messages: [{ role: "user", content: question }]
       })
     });
